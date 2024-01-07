@@ -1,0 +1,50 @@
+name: Python CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      run: |
+        cd tests
+        python -m unittest discover
+
+  deploy:
+    runs-on: windows-latest
+
+    if: github.ref == 'refs/heads/dev' && github.event_name == 'push'
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      with:
+        ref: 'dev'  # Checkout the 'dev' branch
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'
+
+    - name: Deploy to Production
+      run: |
+        # Add your deployment commands here
+        echo "Deploying to production..."
